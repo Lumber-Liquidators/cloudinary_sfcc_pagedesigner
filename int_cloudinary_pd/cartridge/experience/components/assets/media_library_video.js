@@ -49,14 +49,14 @@ function getVideoTransfomations() {
   if (quality !== null && quality.value !== 'none') {
     transformations.quality = quality.value;
   }
-  if (bitRate !== null && bitRate.value !== 'none') {
-    transformations.bitRate = bitRate.value
+  if (bitRate !== null && bitRate.value !== 'default') {
+    transformations.bit_rate = bitRate.value
   }
   if (!isObjectEmpty(transformations)) {
     tr.push(transformations)
   }
   if (global) {
-    tr.push({raw_transformation: global});
+    tr.push({ raw_transformation: global });
   }
   return tr;
 }
@@ -73,9 +73,8 @@ function idSafeString(str) {
   return 'id' + str.toLowerCase().replace(/[^a-zA-Z0-9-:\.]/, '');
 }
 
-function rebuildTransformations(transformations) {
-  var global = getVideoTransfomations();
-  var trns = transformations.map(function(tr) {
+function rebuildTransformations(transformations, global) {
+  var trns = transformations.map(function (tr) {
     if (tr.overlay && tr.overlay.resource_type) {
       delete tr.overlay.resource_type;
     }
@@ -84,17 +83,42 @@ function rebuildTransformations(transformations) {
   return global.concat(trns);
 }
 
-function callEagerTransformations(conf) {
-  var trans = Array.isArray(conf.sourceConfig.transformation) ? conf.sourceConfig.transformation : [];
-  if (!conf.isTransformationOverride) {
-    trans = rebuildTransformations(trans);
+function buildGlobalStr(global) {
+  var str = '';
+  if (global) {
+    for (var key in global) {
+      if (key === 'quality') {
+        str += 'q_' + global[key];
+      }
+      if (key === 'bit_rate') {
+        str += (str === '') ? ',br_' + global[key] : 'br_' + global[key];
+      }
+      if (key === 'raw_transformation') {
+        str += (str === '') ? ',' + global[key] :  global[key];
+      }
+    }
   }
-  conf.sourceConfig.transformation = trans;
+  return str;
+}
+
+function callEagerTransformations(conf, publicId) {
+  try {
+    var str = conf.transStr
+    var trans = Array.isArray(conf.sourceConfig.transformation) ? conf.sourceConfig.transformation : [];
+    if (!conf.isTransformationOverride) {
+      var global = getVideoTransfomations();
+      trans = rebuildTransformations(trans, global);
+      var globalStr = buildGlobalStr(global[0]);
+      if (globalStr !== '') {
+        str = globalStr + ',' + str;
+       }
+    }
+    conf.sourceConfig.transformation = trans;
     var body = {
       timestamp: (Date.now() / 1000).toFixed(),
       type: "upload",
-      public_id: conf.publicId,
-      eager: utils.stringifyJson(trans),
+      public_id: publicId,
+      eager: str,
       eager_async: true
     }
     body.signature = utils.addSignatureToBody(body);
@@ -102,8 +126,13 @@ function callEagerTransformations(conf) {
     var res = utils.callService(body, 'video', 'explicit');
     if (!res.ok) {
       log.error('Error call explicit video transformations');
+      log.error(res.message);
     }
     return conf;
+  } catch (e) {
+      log.error('Error call explicit video transformations');
+      log.error(e.message);
+  }
 }
 
 module.exports.render = function (context) {
@@ -111,16 +140,17 @@ module.exports.render = function (context) {
   let viewmodel = {};
   let val = context.content.asset_sel;
   if (!val.playerConf.empty) {
-  var conf = JSON.parse(val.playerConf);
-  var format = currentSite.getCustomPreferenceValue('CloudinaryVideoFormat');
-  if (format !== null && format.value !== 'none') {
-    conf.sourceType = format
-  }
-  conf = callEagerTransformations(conf);
-  viewmodel.cloudName = val.cloudName;
-  viewmodel.public_id = val.playerConf.publicId;
-  viewmodel.id = idSafeString(val.public_id + randomString(12));
-  viewmodel.playerConf = JSON.stringify(conf);
+    var conf = JSON.parse(val.playerConf);
+    var publicId = conf.publicId;
+    var format = currentSite.getCustomPreferenceValue('CloudinaryVideoFormat');
+    if (format !== null && format.value !== 'none') {
+      conf.sourceType = format
+    }
+    conf = callEagerTransformations(conf, publicId);
+    viewmodel.cloudName = val.cloudName;
+    viewmodel.public_id = publicId;
+    viewmodel.id = idSafeString(publicId + randomString(12));
+    viewmodel.playerConf = JSON.stringify(conf);
   }
   model.viewmodel = viewmodel;
   return new Template('experience/components/assets/cloudinary_video').render(model).text;

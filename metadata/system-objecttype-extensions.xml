@@ -45,14 +45,23 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="CloudinaryPageDesignerEnv">
+                <display-name xml:lang="x-default">Cloudinary Page Designer Enviroment</display-name>
+                <description xml:lang="x-default">Cloudinary Iframe Enviroment</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://sfcc.t-y.co</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="CloudinaryImageTransformationsQuality">
-                <display-name xml:lang="x-default">Image Quality</display-name>
-                <description xml:lang="x-default">Adjust the quality of your images</description>
+                <display-name xml:lang="x-default">Default image quality</display-name>
+                <description xml:lang="x-default">Choose the quality for images</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">auto</display>
                         <value>auto</value>
                     </value-definition>
@@ -99,13 +108,13 @@
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="CloudinaryImageTransformationsDPR">
-                <display-name xml:lang="x-default">Transformations - Device Pixel Ratio (DPR)</display-name>
+                <display-name xml:lang="x-default">Default image Device Pixel Ratio (DPR)</display-name>
                 <description xml:lang="x-default">Set Device Pixel Ratio</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">auto</display>
                         <value>auto</value>
                     </value-definition>
@@ -124,13 +133,13 @@
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="CloudinaryImageTransformationsFormat">
-                <display-name xml:lang="x-default">Image foramt</display-name>
-                <description xml:lang="x-default">Image foramt</description>
+                <display-name xml:lang="x-default">Default image format</display-name>
+                <description xml:lang="x-default">Choose the format for images</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">auto</display>
                         <value>auto</value>
                     </value-definition>
@@ -157,26 +166,28 @@
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="CloudinaryImageUseAltText">
-                <display-name xml:lang="x-default">Use Cloudinary Alt Text</display-name>
-                <description xml:lang="x-default">Should Cloudinary Alt Text should be used</description>
+                <display-name xml:lang="x-default">Use image alt text from Cloudinary</display-name>
+                <description xml:lang="x-default">Image description from Cloudinary is used as the alt text</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CloudinaryImageTransformations">
-                <display-name xml:lang="x-default">Global Image Transformations</display-name>
-                <description xml:lang="x-default">Default settings for image transformations</description>
+                <display-name xml:lang="x-default">Default image transformations</display-name>
+                <description xml:lang="x-default">Specify transformations in the Cloudinary URL format</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="CloudinaryVideoFormat">
+                <display-name xml:lang="x-default">Default video format</display-name>
+                <description xml:lang="x-default">Choose the format for videos</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">none</display>
                         <value>none</value>
                     </value-definition>
@@ -199,15 +210,15 @@
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="CloudinaryVideoTransformations">
-                <display-name xml:lang="x-default">Global Video Transformations</display-name>
-                <description xml:lang="x-default">Default settings for video transformations</description>
+                <display-name xml:lang="x-default">Default video transformations</display-name>
+                <description xml:lang="x-default">Specify transformations in the Cloudinary URL format</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="CloudinaryVideoTransformationsBitRate">
-                <display-name xml:lang="x-default">Global Video Transformations - Bit Rate</display-name>
-                <description xml:lang="x-default">Default settings for video transformations - Bit Rate</description>
+                <display-name xml:lang="x-default">Default video bitrate</display-name>
+                <description xml:lang="x-default">Choose the bitrate for videos</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -227,8 +238,8 @@
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="CloudinaryVideoTransformationsQuality">
-                <display-name xml:lang="x-default">Global Video Transformations - Quality</display-name>
-                <description xml:lang="x-default">Default settings for video transformations - Quality</description>
+                <display-name xml:lang="x-default">Default video quality</display-name>
+                <description xml:lang="x-default">Choose the quality for videos</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -284,7 +295,6 @@
                 <attribute attribute-id="CloudinaryPageDesignerAPIkey"/>
                 <attribute attribute-id="CloudinaryPageDesignerSecretKey"/>
                 <attribute attribute-id="CloudinaryPageDesignerUseSha256"/>
-                <attribute attribute-id="CloudinaryPageDesignerTag"/>
                 <attribute attribute-id="CloudinaryImageTransformationsDPR"/>
                 <attribute attribute-id="CloudinaryImageTransformationsFormat"/>
                 <attribute attribute-id="CloudinaryImageTransformationsQuality"/>
@@ -294,7 +304,7 @@
                 <attribute attribute-id="CloudinaryVideoTransformationsBitRate"/>
                 <attribute attribute-id="CloudinaryVideoTransformationsQuality"/>
                 <attribute attribute-id="CloudinaryVideoTransformations"/>
-                
+                <attribute attribute-id="CloudinaryPageDesignerEnv"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
