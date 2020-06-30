@@ -20,14 +20,15 @@
         }
         )
         window.config = config;
-        iFrameResize({ heightCalculationMethod: 'taggedElement'}, '#image-form');
+        iFrameResize({ heightCalculationMethod: 'taggedElement' }, '#image-form');
     })
 })()
 
+
 function getIframeUrl(value, config) {
-    let val = encodeURIComponent(JSON.stringify(value));
+    let val = encodeURIComponent(JSON.stringify(cldUtils.dehydrate(value)));
     let global = encodeURIComponent(JSON.stringify(config.globalTrans));
-    return config.iFrameEnv + "/image-side-panel?cloudName=" + config.cloudName + '&value=' + val + '&global=' + global;
+    return config.iFrameEnv + "/image-side-panel?cloudName=" + config.cloudName + '&canme=' + config.cname + '&value=' + val + '&global=' + global;
 }
 
 function reInitIframe(value, config) {
@@ -51,10 +52,12 @@ const getBreackpoints = (brUrl, publicId, ifrm) => {
     })
 }
 
+
 const isObjectEmpty = (obj) => Object.keys(obj).length === 0 && obj.constructor === Object;
 
 const handleIframeMessage = (message, ifrm, value = null, config) => {
     if (message.action) {
+    console.log(message);
         switch (message.action) {
             case 'openAdvConf':
                 emit({
@@ -89,25 +92,49 @@ const handleIframeMessage = (message, ifrm, value = null, config) => {
                         title: 'Link Builder'
                     }
                 }, (data) => {
-                    console.log(data);
                     data.value.origin = 'imageLink';
-                    ifrm.contentWindow.postMessage(data.value, '*');
+                    fetch(config.linkBuilderUrl + '?linkData=' + encodeURIComponent(JSON.stringify(data.value.value))).then((response) => {
+                        if (response.status === 200) {
+                            response.json().then((json) => {
+                                if (json.status === 'ok') {
+                                    data.value.url = json.url;
+                                    ifrm.contentWindow.postMessage(data.value, '*');
+                                }
+                            }).catch((e) => {console.log(e)});
+                        }
+                    })
                 });
                 break;
             case 'done':
                 delete message.action;
-                var val = isObjectEmpty(message.formValues.image) ? null : message;
+                emit({
+                    type: 'sfcc:valid',
+                    payload: {
+                        valid: false,
+                    }
+                });
                 emit({
                     type: 'sfcc:value',
-                    payload: val
+                    payload: message
+                });
+                break;
+            case 'invalid':
+                emit({
+                    type: 'sfcc:valid',
+                    payload: {
+                        valid: false,
+                    }
                 });
                 emit({
-                    type: 'sfcc:interacted',
+                    type: 'sfcc:value',
+                    payload: null
                 });
+            case 'ready':
+                value.origin = 'ready';
+                ifrm.contentWindow.postMessage(value, '*');
                 break;
         }
     }
-    console.log(message);
 }
 listen('sfcc:value', value => {
     reInitIframe(value, window.config);

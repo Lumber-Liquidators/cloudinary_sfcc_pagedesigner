@@ -21,25 +21,31 @@
             }
         }
         )
-        iFrameResize({ log: true }, '#image-form');
+        parentIFrame.getPageInfo((i) => {
+            const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+            const headerHeight = 61;
+            const footerHeight = 61;
+            // We remove - 6rem padding, header & footer
+            iFrame.height = i.clientHeight - (6 * rem) - headerHeight - footerHeight;
+        });
     })
 })()
 
 function getIframeUrl(value, config) {
-    let val = encodeURIComponent(JSON.stringify(value));
+    let val = encodeURIComponent(JSON.stringify(cldUtils.dehydrate(value)));
     let global = encodeURIComponent(JSON.stringify(config.globalTrans));
     return config.iFrameEnv + "/image?cloudName=" + config.cloudName + '&value=' + val + '&global=' + global;
 }
-function autosizeIframe(iframe) {
+/* function autosizeIframe(iframe) {
     iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
-}
+} */
 
 const getBreackpoints = (brUrl, publicId, ifrm) => {
     fetch(brUrl + '?publicId=' + publicId).then(response => {
         if (response.ok) {
             response.json().then(data => {
                 ifrm.contentWindow.postMessage(data, '*');
-            })
+            }).catch((e) => { console.log(e); });
         }
     })
 }
@@ -55,13 +61,9 @@ const handleIframeMessage = (message, ifrm, value = null, config) => {
                         title: `Cloudinary Image`
                     }
                 }, (data) => {
-                    getBreackpoints(config.breakpointsUrl, data.value.public_id, ifrm);
                     data.value.origin = message.source;
                     ifrm.contentWindow.postMessage(data.value, '*');
                 });
-                break;
-            case 'ready':
-                ifrm.contentWindow.postMessage(value, '*');
                 break;
             case 'done':
                 delete message.action;
@@ -70,6 +72,10 @@ const handleIframeMessage = (message, ifrm, value = null, config) => {
                     type: 'sfcc:value',
                     payload: val
                 })
+                break;
+            case 'ready':
+                value.origin = 'ready';
+                ifrm.contentWindow.postMessage(value, '*');
                 break;
 
         }

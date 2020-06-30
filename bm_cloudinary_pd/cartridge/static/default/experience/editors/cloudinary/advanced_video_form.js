@@ -2,7 +2,7 @@
 (() => {
     subscribe('sfcc:ready', async ({ value, config, isDisabled, isRequired, dataLocale, displayLocale }) => {
         let iFrame = document.createElement('iframe');
-        let val = encodeURIComponent(JSON.stringify(value));
+        let val = encodeURIComponent(JSON.stringify(cldUtils.dehydrate(value)));
         iFrame.src = config.iFrameEnv + "/video?cloudName=" + config.cloudName + '&value=' + val;
         iFrame.id = 'video-form';
         iFrame.setAttribute('frameborder', 0);
@@ -19,7 +19,14 @@
             }
         }
         )
-        iFrameResize({heightCalculationMethod: 'taggedElement' }, '#video-form');
+        parentIFrame.getPageInfo((i) => {
+            const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+            const headerHeight = 61;
+            const footerHeight = 61;
+            // We remove - 6rem padding, header & footer
+            iFrame.height = i.clientHeight - (6 * rem) - headerHeight - footerHeight;
+        });
+        //iFrameResize({heightCalculationMethod: 'taggedElement' }, '#video-form');
     })
 })()
 
@@ -40,6 +47,7 @@ const handleIframeMessage = (message, ifrm, value = null, config) => {
                 });
                 break;
             case 'ready':
+                value.origin = 'ready';
                 ifrm.contentWindow.postMessage(value, '*');
                 break;
             case 'done':

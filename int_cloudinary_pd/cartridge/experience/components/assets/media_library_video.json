@@ -5,14 +5,23 @@
   "attribute_definition_groups": [
     {
       "id": "Video",
-      "name": "Cloudinary Video Configuration",
       "attribute_definitions": [
         {
           "id": "asset_sel",
+          "name": "Component configuration",
           "type": "custom",
           "required": true,
           "editor_definition": {
             "type": "cloudinary.video_form"
+          }
+        },
+        {
+          "id": "version",
+          "name": "Cloudinary cartridge version",
+          "type": "custom",
+          "required": false,
+          "editor_definition": {
+            "type": "cloudinary.version"
           }
         }
         ]

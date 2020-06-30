@@ -19,14 +19,14 @@
         }
         )
         window.config = config;
-        iFrameResize({heightCalculationMethod: 'taggedElement' }, '#video-form');
+        iFrameResize({ heightCalculationMethod: 'taggedElement' }, '#video-form');
     })
 })()
 
 function getIframeUrl(value, config) {
-    let val = encodeURIComponent(JSON.stringify(value));
+    let val = encodeURIComponent(JSON.stringify(cldUtils.dehydrate(value)));
     let global = encodeURIComponent(JSON.stringify(config.globalTrans));
-    return config.iFrameEnv + "/video-side-panel?cloudName=" + config.cloudName + '&value=' + val + '&global=' + global;
+    return config.iFrameEnv + "/video-side-panel?cloudName=" + config.cloudName + '&cname=' + config.cname + '&value=' + val + '&global=' + global;
 }
 
 function reInitIframe(value, config) {
@@ -65,11 +65,27 @@ const handleIframeMessage = (message, ifrm, value = null, config) => {
                 break;
             case 'done':
                 delete message.action;
-                var val = Object.assign({}, message);
+                emit({
+                    type: 'sfcc:valid',
+                    payload: {
+                        valid: false,
+                    }
+                });
                 emit({
                     type: 'sfcc:value',
-                    payload: val
-                })
+                    payload: message
+                });
+                break;
+            case 'invalid':
+                emit({
+                    type: 'sfcc:valid',
+                    payload: {
+                        valid: false,
+                    }
+                });
+            case 'ready':
+                value.origin = 'ready';
+                ifrm.contentWindow.postMessage(value, '*');
                 break;
 
         }
