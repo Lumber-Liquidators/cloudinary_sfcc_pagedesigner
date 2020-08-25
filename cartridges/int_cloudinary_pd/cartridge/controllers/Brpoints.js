@@ -39,7 +39,7 @@ function getBreackpoints(publicId) {
         responsive_breakpoints: [
             {
                 bytes_step: 20000,
-                max_width: 1000,
+                max_width: 1800,
                 max_images: 20,
                 min_width: 200
             }]
@@ -52,7 +52,7 @@ function getBreackpoints(publicId) {
         var result = r.message;
         return getBreackpointsFromResponse(result);
     }
-    return [1280, 768, 375];
+    return [1800, 1500, 1280, 768, 375];
 }
 
 server.get('Points', server.middleware.https, function (req, res, next) {
