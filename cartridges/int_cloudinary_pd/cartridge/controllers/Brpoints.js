@@ -3,6 +3,7 @@
 var server = require('server');
 var currentSite = require('dw/system/Site').getCurrent();
 var utils = require('*/cartridge/experience/utils/utils');
+const Logger = require('dw/system/Logger').getLogger("Cloudinary");
 
 // var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
@@ -24,7 +25,7 @@ function getBreackpointsFromResponse(response) {
         });
         return resBreakpoints;
     }
-    return [1280, 768, 375];
+    return [1800, 1500, 1280, 768, 375];
 }
 /**
  * Retrives the best breakpoint for an asset
@@ -59,6 +60,7 @@ server.get('Points', server.middleware.https, function (req, res, next) {
     var publicId = req.querystring.publicId;
     if (publicId) {
         var brs = getBreackpoints(publicId);
+        Logger.info("Breakpoints received for id {0} - {1} ",publicId,brs.toString());
         res.json({
             status: 'ok',
             breakpoints: brs
