@@ -42,7 +42,7 @@ function renderImgs() {
     }
 }
 
-const onError = (err) => {
+var onError = (err) => {
     let target = event.currentTarget;
     target.onerror = null;
     target.removeAttribute('srcset');
@@ -50,7 +50,7 @@ const onError = (err) => {
     return true;
 }
 
-const buildImageOverlay = (overlay) => {
+var buildImageOverlay = (overlay) => {
     let imageOverlay = new cloudinary.Layer().publicId(overlay.publicId);
     return {
         overlay: imageOverlay,
@@ -63,7 +63,7 @@ const buildImageOverlay = (overlay) => {
     };
 };
 
-const buildTextOverlay = (overlay) => {
+var buildTextOverlay = (overlay) => {
     if (overlay && overlay.text) {
         let textOverlay = new cloudinary.TextLayer()
             .fontFamily(overlay.fontFamily)
